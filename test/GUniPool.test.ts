@@ -68,8 +68,8 @@ describe("GUniPool", function () {
     )) as IUniswapV3Factory;
 
     const mockERC20Factory = await ethers.getContractFactory("MockERC20");
-    token0 = (await mockERC20Factory.deploy()) as IERC20;
-    token1 = (await mockERC20Factory.deploy()) as IERC20;
+    token0 = (await mockERC20Factory.deploy("TOKEN0", "T0")) as IERC20;
+    token1 = (await mockERC20Factory.deploy("TOKEN1", "T1")) as IERC20;
 
     await token0.approve(
       swapTest.address,
