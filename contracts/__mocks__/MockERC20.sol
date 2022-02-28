@@ -6,7 +6,7 @@ import {
 } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 contract MockERC20 is ERC20Upgradeable {
-    constructor(string memory name, string memory symbol) {
+    constructor(string memory name, string memory symbol) initializer {
         __ERC20_init(name, symbol);
         _mint(msg.sender, 100000e18);
     }

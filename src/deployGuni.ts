@@ -21,24 +21,22 @@ function encodePriceSqrt(reserve1: string, reserve0: string) {
 async function main() {
   const ilanPublicAddress = "0x535CDe0F8339CD4b5bb5804f1DcaAE239920bB7D"; // test wallet
   const uniswapFactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
-  // const [user0, gelato] = await ethers.getSigners();
+  const [user0, gelato] = await ethers.getSigners();
   console.log("deploying uni factory");
-  // const uniswapV3Factory = await ethers.getContractFactory(
-  //     "UniswapV3Factory"
-  // );
+  // const uniswapV3Factory = await ethers.getContractFactory("UniswapV3Factory");
   // const uniswapDeploy = await uniswapV3Factory.deploy();
   // const uniswapFactory = (await ethers.getContractAt(
-  //     "IUniswapV3Factory",
-  //     uniswapDeploy.address
+  //   "IUniswapV3Factory",
+  //   uniswapDeploy.address
   // )) as IUniswapV3Factory;
   const uniswapFactory = (await ethers.getContractAt(
     "IUniswapV3Factory",
     uniswapFactoryAddress
-  )) as IUniswapV3Factory;
+  )) as unknown as IUniswapV3Factory;
   console.log("deploying erc20 ");
   const mockERC20Factory = await ethers.getContractFactory("MockERC20");
-  let token0 = (await mockERC20Factory.deploy("TOKEN 0", "T0")) as IERC20;
-  let token1 = (await mockERC20Factory.deploy("TOKEN 1", "T1")) as IERC20;
+  let token0 = (await mockERC20Factory.deploy("TOKEN 0", "T0")) as unknown as IERC20;
+  let token1 = (await mockERC20Factory.deploy("TOKEN 1", "T1")) as unknown as IERC20;
 
   //   await token0.approve(
   //     swapTest.address,
@@ -71,7 +69,7 @@ async function main() {
   const uniswapPool = (await ethers.getContractAt(
     "IUniswapV3Pool",
     uniswapPoolAddress
-  )) as IUniswapV3Pool;
+  )) as unknown as IUniswapV3Pool;
   console.log("init uni pool ");
   await uniswapPool.initialize(encodePriceSqrt("1", "1"));
 
@@ -79,7 +77,7 @@ async function main() {
 
   const gUniPoolFactory = await ethers.getContractFactory("GUniPool");
   // const gUniImplementation = await gUniPoolFactory.deploy(
-  //     await gelato.getAddress()
+  //   await gelato.getAddress()
   // );
   const gUniImplementation = await gUniPoolFactory.deploy(ilanPublicAddress);
 
@@ -92,17 +90,17 @@ async function main() {
   );
   const gUniFactory = (await gUniFactoryFactory.deploy(
     uniswapFactory.address
-  )) as GUniFactory;
+  )) as unknown as GUniFactory;
   console.log("initialize factory ");
   // await gUniFactory.initialize(
-  //     implementationAddress,
-  //     await user0.getAddress(),
-  //     await user0.getAddress()
+  //   implementationAddress,
+  //   await user0.getAddress(),
+  //   await user0.getAddress()
   // );
   await gUniFactory.initialize(
     implementationAddress,
     ilanPublicAddress,
-    ilanPublicAddress
+    "0x0000000000000000000000000000000000000000"
   );
 
   gUniFactory.on("PoolCreated", (uniPool: any, manager: any, pool: any) => {
@@ -116,7 +114,10 @@ async function main() {
     3000,
     0,
     -887220,
-    887220
+    887220,
+    {
+      gasLimit: 1000000,
+    }
   );
   console.log("createPoolTx: ", createPoolTx);
 
@@ -128,7 +129,7 @@ async function main() {
       setTimeout(() => {
         console.log("timeout");
         resolve();
-      }, 10000);
+      }, 30000);
     });
   };
   await wait();

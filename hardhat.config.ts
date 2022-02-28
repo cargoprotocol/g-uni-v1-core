@@ -31,6 +31,15 @@ const config: HardhatUserConfig = {
   },
 
   networks: {
+    hardhat: {
+      chainId: 1337,
+      forking: {
+        url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_ID}`,
+      },
+      mining: {
+        auto: true,
+      },
+    },
     mainnet: {
       accounts: DEPLOYER_PK_MAINNET ? [DEPLOYER_PK_MAINNET] : [],
       chainId: 1,
@@ -50,6 +59,11 @@ const config: HardhatUserConfig = {
       accounts: DEPLOYER_PK ? [DEPLOYER_PK] : [],
       chainId: 5,
       url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_ID}`,
+    },
+    rinkeby: {
+      accounts: DEPLOYER_PK ? [DEPLOYER_PK] : [],
+      chainId: 4,
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_ID}`,
     },
   },
 
